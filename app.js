@@ -36,6 +36,10 @@ class Labyrinth {
         return Math.floor(Math.random() * this.fieldLength) + 1;
     }
 
+    getRandomNumber(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
     displayStartPosition(rows, cols) {
         const position = this.getStartPosition(rows, cols);
 
@@ -58,11 +62,57 @@ class Labyrinth {
     }
 
     getValidMoves(position) {
-        const validMoves = [];
+        let validMoves = [];
+        const moves = {
+            1: 'up',
+            2: 'down',
+            3: 'left',
+            4: 'right'
+        };
+        const limit = {
+            min: 1,
+            max: this.fieldLength
+        };
 
-        console.log(position.row)
+        let currentPosition = position;
+        console.log('current position start: ', currentPosition);
+
+        while (validMoves.length < 10) {
+            const randomNumber = this.getRandomNumber(1, 4);
+            console.log('current position: ', currentPosition);
+            switch(randomNumber) {
+                case 1:
+                    if (currentPosition.row - 1 >= limit.min) {
+                        currentPosition.row = currentPosition.row - 1;
+                        console.log('up: ', currentPosition);
+                        validMoves.push( Object.assign({}, currentPosition) );
+                    }
+                    break;
+                case 2:
+                    if (currentPosition.row + 1 <= limit.max) {
+                        currentPosition.row = currentPosition.row + 1;
+                        console.log('down: ', currentPosition);
+                        validMoves.push( Object.assign({}, currentPosition) );
+                    }
+                    break;
+                case 3:
+                    if (currentPosition.column - 1 >= limit.min) {
+                        currentPosition.column = currentPosition.column - 1;
+                        console.log('left: ', currentPosition);
+                        validMoves.push( Object.assign({}, currentPosition) );
+                    }
+                    break;
+                case 4:
+                    if (currentPosition.column + 1 <= limit.max) {
+                        currentPosition.column = currentPosition.column + 1;
+                        console.log('right: ', currentPosition);
+                        validMoves.push( Object.assign({}, currentPosition) );
+                    }
+            }
+        }
+
+        console.log('final moves: ', validMoves);
     }
-
 }
 
 const labyrinth = new Labyrinth(3);
