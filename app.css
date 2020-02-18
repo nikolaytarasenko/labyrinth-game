@@ -31,3 +31,19 @@ body {
 .app__cell {
     border: 1px solid silver;
 }
+
+.app__moves {
+    display: flex;
+    margin-top: 10px;
+}
+
+.app__move {
+    font-size: 30px;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    background: azure;
+}

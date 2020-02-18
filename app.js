@@ -44,7 +44,24 @@ class Labyrinth {
         const position = this.getStartPosition(rows, cols);
 
         this.drawStartPosition(position);
-        this.getValidMoves(position);
+
+        const moves = this.getValidMoves(position);
+        this.displayMoves(moves);
+        this.showMarkerInRightPosition(moves.validMoves.pop());
+    }
+
+    displayMoves(moves) {
+        const movesContainer = document.querySelector('.app__moves');
+        moves.movesForDisplay.forEach((move, index) => {
+            setTimeout(function() {
+                movesContainer.innerHTML += `<div class="app__move">${move}</div>`;
+            }, (index + 1) * 500);
+        });
+        console.log(moves.validMoves);
+    }
+
+    showMarkerInRightPosition(rightPosition) {
+        document.querySelector(`.app__cell[data-row="${rightPosition.row}"][data-column="${rightPosition.column}"]`).innerHTML = "answer";
     }
 
     getStartPosition(rows, cols) {
@@ -62,12 +79,13 @@ class Labyrinth {
     }
 
     getValidMoves(position) {
-        let validMoves = [];
+        const validMoves = [];
+        const movesForDisplay = [];
         const moves = {
-            1: 'up',
-            2: 'down',
-            3: 'left',
-            4: 'right'
+            1: '↑',
+            2: '↓',
+            3: '←',
+            4: '→'
         };
         const limit = {
             min: 1,
@@ -75,43 +93,49 @@ class Labyrinth {
         };
 
         let currentPosition = position;
-        console.log('current position start: ', currentPosition);
+        //console.log('current position start: ', currentPosition);
 
         while (validMoves.length < 10) {
             const randomNumber = this.getRandomNumber(1, 4);
-            console.log('current position: ', currentPosition);
+            //console.log('current position: ', currentPosition);
             switch(randomNumber) {
                 case 1:
                     if (currentPosition.row - 1 >= limit.min) {
                         currentPosition.row = currentPosition.row - 1;
-                        console.log('up: ', currentPosition);
+                        movesForDisplay.push(moves[randomNumber]);
                         validMoves.push( Object.assign({}, currentPosition) );
                     }
                     break;
                 case 2:
                     if (currentPosition.row + 1 <= limit.max) {
                         currentPosition.row = currentPosition.row + 1;
-                        console.log('down: ', currentPosition);
+                        movesForDisplay.push(moves[randomNumber]);
                         validMoves.push( Object.assign({}, currentPosition) );
                     }
                     break;
                 case 3:
                     if (currentPosition.column - 1 >= limit.min) {
                         currentPosition.column = currentPosition.column - 1;
-                        console.log('left: ', currentPosition);
+                        movesForDisplay.push(moves[randomNumber]);
                         validMoves.push( Object.assign({}, currentPosition) );
                     }
                     break;
                 case 4:
                     if (currentPosition.column + 1 <= limit.max) {
                         currentPosition.column = currentPosition.column + 1;
-                        console.log('right: ', currentPosition);
+                        movesForDisplay.push(moves[randomNumber]);
                         validMoves.push( Object.assign({}, currentPosition) );
                     }
             }
         }
 
-        console.log('final moves: ', validMoves);
+        //console.log('final moves: ', validMoves);
+        //console.log('final moves for display: ', movesForDisplay);
+
+        return {
+            validMoves,
+            movesForDisplay
+        }
     }
 }
 
