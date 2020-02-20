@@ -30,6 +30,8 @@ body {
 
 .app__cell {
     border: 1px solid silver;
+    background: transparent;
+    cursor: pointer;
 }
 
 .app__moves {

@@ -2,6 +2,7 @@ class Labyrinth {
     constructor(fieldLength) {
         this.fieldLength = fieldLength;
         this.init();
+        this.currentStartPosition = null;
     }
 
     init() {
@@ -22,9 +23,10 @@ class Labyrinth {
 
         for (let i = 0; i < rows.length; i++) {
             for (let j = 0; j < cols.length; j++) {
-                let cell = document.createElement('div');
+                let cell = document.createElement('button');
                 cell.setAttribute('data-row', rows[i]);
                 cell.setAttribute('data-column', cols[j]);
+                cell.setAttribute('disabled', 'true');
                 cell.className = 'app__cell';
 
                 field.appendChild(cell);
@@ -41,22 +43,36 @@ class Labyrinth {
     }
 
     displayStartPosition(rows, cols) {
-        const position = this.getStartPosition(rows, cols);
+        let position = this.getStartPosition(rows, cols);
+        this.currentStartPosition = Object.assign({}, position);
 
         this.drawStartPosition(position);
-
         const moves = this.getValidMoves(position);
-        this.displayMoves(moves);
         this.showMarkerInRightPosition(moves.validMoves.pop());
+        this.displayMoves(moves, position);
     }
 
-    displayMoves(moves) {
+    displayMoves(moves, position) {
         const movesContainer = document.querySelector('.app__moves');
+        const that = this;
+        console.log('displayMoves: ', that.currentStartPosition);
+
         moves.movesForDisplay.forEach((move, index) => {
             setTimeout(function() {
                 movesContainer.innerHTML += `<div class="app__move">${move}</div>`;
-            }, (index + 1) * 500);
+
+                if (movesContainer.children.length === 10) {
+                    const cells = document.querySelector('.app__field').children;
+
+                    for (let i = 0; i < cells.length; i++) {
+                        cells[i].removeAttribute('disabled');
+
+                        cells[i].addEventListener('click', e => that.getAnswer(e, position));
+                    }
+                }
+            }, (index + 1) * 100);
         });
+
         console.log(moves.validMoves);
     }
 
@@ -92,49 +108,62 @@ class Labyrinth {
             max: this.fieldLength
         };
 
-        let currentPosition = position;
+        console.log('current position start (paramaetr): ', position);
         //console.log('current position start: ', currentPosition);
+
+        const testPosition = position;
+        let currentPosition = Object.assign({}, position);
 
         while (validMoves.length < 10) {
             const randomNumber = this.getRandomNumber(1, 4);
             //console.log('current position: ', currentPosition);
-            switch(randomNumber) {
+            switch (randomNumber) {
                 case 1:
                     if (currentPosition.row - 1 >= limit.min) {
                         currentPosition.row = currentPosition.row - 1;
                         movesForDisplay.push(moves[randomNumber]);
-                        validMoves.push( Object.assign({}, currentPosition) );
+                        validMoves.push(Object.assign({}, currentPosition));
                     }
                     break;
                 case 2:
                     if (currentPosition.row + 1 <= limit.max) {
                         currentPosition.row = currentPosition.row + 1;
                         movesForDisplay.push(moves[randomNumber]);
-                        validMoves.push( Object.assign({}, currentPosition) );
+                        validMoves.push(Object.assign({}, currentPosition));
                     }
                     break;
                 case 3:
                     if (currentPosition.column - 1 >= limit.min) {
                         currentPosition.column = currentPosition.column - 1;
                         movesForDisplay.push(moves[randomNumber]);
-                        validMoves.push( Object.assign({}, currentPosition) );
+                        validMoves.push(Object.assign({}, currentPosition));
                     }
                     break;
                 case 4:
                     if (currentPosition.column + 1 <= limit.max) {
                         currentPosition.column = currentPosition.column + 1;
                         movesForDisplay.push(moves[randomNumber]);
-                        validMoves.push( Object.assign({}, currentPosition) );
+                        validMoves.push(Object.assign({}, currentPosition));
                     }
             }
         }
 
-        //console.log('final moves: ', validMoves);
-        //console.log('final moves for display: ', movesForDisplay);
-
         return {
             validMoves,
-            movesForDisplay
+            movesForDisplay,
+            startPosition: testPosition
+        }
+    }
+
+    getAnswer(e, position) {
+        const answerCell = e.target;
+        const answerPosition = {
+            row: +e.target.getAttribute('data-row'),
+            column: +e.target.getAttribute('data-column')
+        };
+
+        if (answerPosition.row === position.row) {
+
         }
     }
 }
