@@ -48,11 +48,11 @@ class Labyrinth {
 
         this.drawStartPosition(position);
         const moves = this.getValidMoves(position);
-        this.showMarkerInRightPosition(moves.validMoves.pop());
-        this.displayMoves(moves, position);
+        this.showMarkerInRightPosition(moves.validMoves[moves.validMoves.length - 1]);
+        this.displayMoves(moves, position, moves.validMoves[moves.validMoves.length - 1]);
     }
 
-    displayMoves(moves, position) {
+    displayMoves(moves, startPosition, rightPosition) {
         const movesContainer = document.querySelector('.app__moves');
         const that = this;
         console.log('displayMoves: ', that.currentStartPosition);
@@ -67,7 +67,7 @@ class Labyrinth {
                     for (let i = 0; i < cells.length; i++) {
                         cells[i].removeAttribute('disabled');
 
-                        cells[i].addEventListener('click', e => that.getAnswer(e, position));
+                        cells[i].addEventListener('click', e => that.getAnswer(e, rightPosition));
                     }
                 }
             }, (index + 1) * 100);
@@ -150,20 +150,31 @@ class Labyrinth {
 
         return {
             validMoves,
-            movesForDisplay,
-            startPosition: testPosition
+            movesForDisplay
         }
     }
 
-    getAnswer(e, position) {
+    getAnswer(e, rightPosition) {
         const answerCell = e.target;
         const answerPosition = {
-            row: +e.target.getAttribute('data-row'),
-            column: +e.target.getAttribute('data-column')
+            row: +answerCell.getAttribute('data-row'),
+            column: +answerCell.getAttribute('data-column')
         };
 
-        if (answerPosition.row === position.row) {
+        const cells = document.querySelector('.app__field').children;
 
+        for (let i = 0; i < cells.length; i++) {
+            cells[i].setAttribute('disabled', 'true');
+        }
+
+        if (JSON.stringify(rightPosition) === JSON.stringify(answerPosition)) {
+            answerCell.style.background = 'green';
+            this.showMarkerInRightPosition(rightPosition);
+        } else {
+            for (let i = 0; i < cells.length; i++) {
+                this.showMarkerInRightPosition(rightPosition);
+                answerCell.style.background = 'red';
+            }
         }
     }
 }
